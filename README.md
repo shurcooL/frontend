@@ -1,0 +1,4 @@
+frontend
+========
+
+Common frontend code.
