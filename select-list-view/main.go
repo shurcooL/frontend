@@ -297,6 +297,10 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 
 		overlay.Style().SetProperty("display", "initial", "")
 		entryHeight = results.FirstChild().(dom.Element).GetBoundingClientRect().Object.Get("height").Float()
+	} else {
+		if previouslyHighlightedHeader != nil {
+			previouslyHighlightedHeader.Class().Remove("highlighted")
+		}
 	}
 
 	if len(entries) > 0 {
