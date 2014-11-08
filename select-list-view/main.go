@@ -131,7 +131,7 @@ func main() {
 
 	document.Body().AddEventListener("keydown", false, func(event dom.Event) {
 		switch ke := event.(*dom.KeyboardEvent); {
-		case ke.KeyIdentifier == "U+0052" && ke.MetaKey: // Cmd+R.
+		case ke.KeyIdentifier == "U+0052": // Cmd+R (or just R, since some browsers don't let us intercept Cmd+R).
 			ke.PreventDefault()
 
 			if display := overlay.Style().GetPropertyValue("display"); display != "none" && display != "null" {
