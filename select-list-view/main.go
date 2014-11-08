@@ -180,7 +180,6 @@ func hideOverlay(overlay dom.HTMLElement) {
 var previouslySelected int
 
 func updateResultSelection() {
-	windowHalfHeight := dom.GetWindow().InnerHeight() * 2 / 5
 	results := document.GetElementByID("gts-results").(*dom.HTMLDivElement)
 
 	if selected < 0 {
@@ -214,7 +213,7 @@ func updateResultSelection() {
 		target := document.GetElementByID(element.GetAttribute("data-id")).(dom.HTMLElement)
 		target.Class().Add("highlighted")
 		previouslyHighlightedHeader = target
-		dom.GetWindow().ScrollTo(dom.GetWindow().ScrollX(), int(target.OffsetTop()+target.OffsetHeight())-windowHalfHeight)
+		centerOnTargetIfOffscreen(target)
 
 		manuallyPicked = element.GetAttribute("data-id")
 	}
@@ -222,10 +221,21 @@ func updateResultSelection() {
 	previouslySelected = selected
 }
 
+func centerOnTargetIfOffscreen(target dom.HTMLElement) {
+	isOffscreen := int(target.OffsetTop()) < dom.GetWindow().ScrollY() ||
+		int(target.OffsetTop()+target.OffsetHeight()) > dom.GetWindow().ScrollY()+dom.GetWindow().InnerHeight()
+
+	if isOffscreen {
+		windowHalfHeight := dom.GetWindow().InnerHeight() / 2
+
+		dom.GetWindow().ScrollTo(dom.GetWindow().ScrollX(), int(target.OffsetTop()+target.OffsetHeight())-windowHalfHeight)
+	}
+}
+
 var initialSelected int
 
 func updateResults(init bool, overlay dom.HTMLElement) {
-	windowHalfHeight := dom.GetWindow().InnerHeight() * 2 / 5
+	windowHalfHeight := dom.GetWindow().InnerHeight() / 2
 	filter := document.GetElementByID("gts-command").(*dom.HTMLInputElement).Value
 
 	results := document.GetElementByID("gts-results").(*dom.HTMLDivElement)
@@ -324,6 +334,6 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		target := document.GetElementByID(element.GetAttribute("data-id")).(dom.HTMLElement)
 		target.Class().Add("highlighted")
 		previouslyHighlightedHeader = target
-		dom.GetWindow().ScrollTo(dom.GetWindow().ScrollX(), int(target.OffsetTop()+target.OffsetHeight())-windowHalfHeight)
+		centerOnTargetIfOffscreen(target)
 	}
 }
