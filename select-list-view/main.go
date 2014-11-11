@@ -132,6 +132,11 @@ func main() {
 	document.Body().AddEventListener("keydown", false, func(event dom.Event) {
 		switch ke := event.(*dom.KeyboardEvent); {
 		case ke.KeyIdentifier == "U+0052": // Cmd+R (or just R, since some browsers don't let us intercept Cmd+R).
+			// Ignore R when command elment has focus (it means the user is typing).
+			if document.ActiveElement().Underlying() == command.Underlying() {
+				break
+			}
+
 			ke.PreventDefault()
 
 			if display := overlay.Style().GetPropertyValue("display"); display != "none" && display != "null" {
