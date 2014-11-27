@@ -3,8 +3,10 @@
 package main
 
 import (
+	"fmt"
 	"html"
 	"strings"
+	"time"
 
 	"github.com/gopherjs/gopherjs/js"
 
@@ -37,9 +39,30 @@ func main() {
 	command := document.GetElementByID("gts-command").(*dom.HTMLInputElement)
 	results := document.GetElementByID("gts-results").(*dom.HTMLDivElement)
 
+	var timer int
+	//var ch = make(chan struct{})
+
 	command.AddEventListener("input", false, func(event dom.Event) {
-		updateResults(false, nil)
+		//updateResults(false, nil)
+
+		dom.GetWindow().ClearTimeout(timer)
+		timer = dom.GetWindow().SetTimeout(func() { updateResults(false, nil) }, 200)
+
+		/*select {
+		case ch <- struct{}{}:
+		default:
+		}*/
 	})
+
+	/*go func() {
+		for {
+			<-ch
+
+			updateResults(false, nil)
+
+			time.Sleep(200 * time.Millisecond)
+		}
+	}()*/
 
 	/*mousedown := false
 	results.AddEventListener("mousedown", false, func(event dom.Event) {
@@ -240,8 +263,11 @@ func centerOnTargetIfOffscreen(target dom.HTMLElement) {
 var initialSelected int
 
 func updateResults(init bool, overlay dom.HTMLElement) {
+	started := time.Now()
+
 	windowHalfHeight := dom.GetWindow().InnerHeight() / 2
 	filter := document.GetElementByID("gts-command").(*dom.HTMLInputElement).Value
+	lowerFilter := strings.ToLower(filter)
 
 	results := document.GetElementByID("gts-results").(*dom.HTMLDivElement)
 
@@ -250,7 +276,10 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 	results.SetInnerHTML("")
 	var visibleIndex int
 	for _, header := range headers {
-		if filter != "" && !strings.Contains(strings.ToLower(header.TextContent()), strings.ToLower(filter)) {
+		/*if filter != "" && !strings.Contains(strings.ToLower(header.TextContent()), lowerFilter) {
+			continue
+		}*/
+		if filter != "" && header.Underlying().Get("textContent").Call("toLowerCase").Call("indexOf", lowerFilter).Int() == -1 {
 			continue
 		}
 
@@ -259,7 +288,7 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		element.SetAttribute("data-id", header.ID())
 		{
 			entry := header.TextContent()
-			index := strings.Index(strings.ToLower(entry), strings.ToLower(filter))
+			index := strings.Index(strings.ToLower(entry), lowerFilter)
 			element.SetInnerHTML(html.EscapeString(entry[:index]) + "<strong>" + html.EscapeString(entry[index:index+len(filter)]) + "</strong>" + html.EscapeString(entry[index+len(filter):]))
 		}
 		if header.ID() == manuallyPicked {
@@ -272,6 +301,10 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		results.AppendChild(element)
 
 		visibleIndex++
+
+		if visibleIndex >= 1000 {
+			break
+		}
 	}
 
 	entries = results.ChildNodes()
@@ -341,4 +374,6 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		previouslyHighlightedHeader = target
 		centerOnTargetIfOffscreen(target)
 	}
+
+	fmt.Println("updateResults:", time.Since(started).Seconds())
 }
