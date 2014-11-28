@@ -21,6 +21,7 @@ var headers []dom.Element
 
 type filterableElement struct {
 	Id               string
+	TextContent      string
 	LowerTextContent string
 }
 
@@ -48,14 +49,14 @@ func main() {
 	command := document.GetElementByID("gts-command").(*dom.HTMLInputElement)
 	results := document.GetElementByID("gts-results").(*dom.HTMLDivElement)
 
-	//var timer int
+	var timer int
 	//var ch = make(chan struct{})
 
 	command.AddEventListener("input", false, func(event dom.Event) {
-		updateResults(false, nil)
+		//updateResults(false, nil)
 
-		//dom.GetWindow().ClearTimeout(timer)
-		//timer = dom.GetWindow().SetTimeout(func() { updateResults(false, nil) }, 200)
+		dom.GetWindow().ClearTimeout(timer)
+		timer = dom.GetWindow().SetTimeout(func() { updateResults(false, nil) }, 200)
 
 		/*select {
 		case ch <- struct{}{}:
@@ -192,6 +193,7 @@ func main() {
 				for _, header := range headers {
 					headers2 = append(headers2, filterableElement{
 						Id:               header.ID(),
+						TextContent:      header.TextContent(),
 						LowerTextContent: strings.ToLower(header.TextContent()),
 					})
 				}
@@ -292,7 +294,7 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 	var selectionPreserved = false
 
 	//results.SetInnerHTML("")
-	//var ns []*html.Node
+	var ns []*html.Node
 	var visibleIndex int
 	/*for _, header := range headers {
 		/*if filter != "" && !strings.Contains(strings.ToLower(header.TextContent()), lowerFilter) {
@@ -355,13 +357,13 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 			element.SetInnerHTML(html.EscapeString(entry[:index]) + "<strong>" + html.EscapeString(entry[index:index+len(filter)]) + "</strong>" + html.EscapeString(entry[index+len(filter):]))
 		}
 		results.AppendChild(element)*/
-		/*entry := header.TextContent()
-		index := strings.Index(strings.ToLower(entry), lowerFilter)
+		entry := header.TextContent
+		index := strings.Index(header.LowerTextContent, lowerFilter)
 		p1 := html_gen.Text(entry[:index])
 		p2 := Strong(entry[index : index+len(filter)]) // This can be optimized out of loop?
 		p3 := html_gen.Text(entry[index+len(filter):])
-		n := CustomDiv(p1, p2, p3, "gts-entry", header.ID())
-		ns = append(ns, n)*/
+		n := CustomDiv(p1, p2, p3, "gts-entry", header.Id)
+		ns = append(ns, n)
 
 		if header.Id == manuallyPicked {
 			selectionPreserved = true
@@ -372,16 +374,16 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 
 		visibleIndex++
 
-		/*if visibleIndex >= 1000 {
+		if visibleIndex >= 1000 {
 			break
-		}*/
+		}
 	}
-	results.SetInnerHTML(`<div class="gts-entry" data-id="bufio">stuff goes there</div><div class="gts-entry" data-id="strings">more stuff</div>`)
-	/*innerHtml, err := html_gen.RenderNodes(ns...)
+	//results.SetInnerHTML(`<div class="gts-entry" data-id="bufio">stuff goes there</div><div class="gts-entry" data-id="strings">more stuff</div>`)
+	innerHtml, err := html_gen.RenderNodes(ns...)
 	if err != nil {
 		panic(err)
 	}
-	results.SetInnerHTML(string(innerHtml))*/
+	results.SetInnerHTML(string(innerHtml))
 
 	entries = results.ChildNodes()
 
