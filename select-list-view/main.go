@@ -19,6 +19,13 @@ var document = dom.GetWindow().Document().(dom.HTMLDocument)
 
 var headers []dom.Element
 
+type filterableElement struct {
+	Id               string
+	LowerTextContent string
+}
+
+var headers2 []filterableElement
+
 var selected int
 
 var baseHash string
@@ -181,6 +188,14 @@ func main() {
 					headers = append(headers, header)
 				}
 
+				headers2 = nil
+				for _, header := range headers {
+					headers2 = append(headers2, filterableElement{
+						Id:               header.ID(),
+						LowerTextContent: strings.ToLower(header.TextContent()),
+					})
+				}
+
 				baseHash = strings.TrimPrefix(dom.GetWindow().Location().Hash, "#")
 				baseX, baseY = dom.GetWindow().ScrollX(), dom.GetWindow().ScrollY()
 
@@ -279,13 +294,54 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 	//results.SetInnerHTML("")
 	//var ns []*html.Node
 	var visibleIndex int
-	for _, header := range headers {
+	/*for _, header := range headers {
 		/*if filter != "" && !strings.Contains(strings.ToLower(header.TextContent()), lowerFilter) {
 			continue
-		}*/
+		}* /
 		if filter != "" && header.Underlying().Get("textContent").Call("toLowerCase").Call("indexOf", lowerFilter).Int() == -1 {
 			continue
 		}
+		/*if filter != "" && header.Underlying().Get("textContent").Call("toLowerCase").Call("indexOf", js.Global.Get("my-lower-filter")).Int() == -1 {
+			continue
+		}* /
+
+		/*element := document.CreateElement("div")
+		element.Class().Add("gts-entry")
+		element.SetAttribute("data-id", header.ID())
+		{
+			entry := header.TextContent()
+			index := strings.Index(strings.ToLower(entry), lowerFilter)
+			element.SetInnerHTML(html.EscapeString(entry[:index]) + "<strong>" + html.EscapeString(entry[index:index+len(filter)]) + "</strong>" + html.EscapeString(entry[index+len(filter):]))
+		}
+		results.AppendChild(element)* /
+		/*entry := header.TextContent()
+		index := strings.Index(strings.ToLower(entry), lowerFilter)
+		p1 := html_gen.Text(entry[:index])
+		p2 := Strong(entry[index : index+len(filter)]) // This can be optimized out of loop?
+		p3 := html_gen.Text(entry[index+len(filter):])
+		n := CustomDiv(p1, p2, p3, "gts-entry", header.ID())
+		ns = append(ns, n)* /
+
+		if header.ID() == manuallyPicked {
+			selectionPreserved = true
+
+			selected = visibleIndex
+			previouslySelected = visibleIndex
+		}
+
+		visibleIndex++
+
+		/*if visibleIndex >= 1000 {
+			break
+		}* /
+	}*/
+	for _, header := range headers2 {
+		if filter != "" && !strings.Contains(header.LowerTextContent, lowerFilter) {
+			continue
+		}
+		/*if filter != "" && header.Underlying().Get("textContent").Call("toLowerCase").Call("indexOf", lowerFilter).Int() == -1 {
+			continue
+		}*/
 		/*if filter != "" && header.Underlying().Get("textContent").Call("toLowerCase").Call("indexOf", js.Global.Get("my-lower-filter")).Int() == -1 {
 			continue
 		}*/
@@ -307,7 +363,7 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		n := CustomDiv(p1, p2, p3, "gts-entry", header.ID())
 		ns = append(ns, n)*/
 
-		if header.ID() == manuallyPicked {
+		if header.Id == manuallyPicked {
 			selectionPreserved = true
 
 			selected = visibleIndex
