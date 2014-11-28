@@ -4,11 +4,13 @@ package main
 
 import (
 	"fmt"
-	"html"
 	"strings"
 	"time"
 
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/shurcooL/go/html_gen"
+
+	"golang.org/x/net/html"
 
 	"honnef.co/go/js/dom"
 )
@@ -39,14 +41,14 @@ func main() {
 	command := document.GetElementByID("gts-command").(*dom.HTMLInputElement)
 	results := document.GetElementByID("gts-results").(*dom.HTMLDivElement)
 
-	var timer int
+	//var timer int
 	//var ch = make(chan struct{})
 
 	command.AddEventListener("input", false, func(event dom.Event) {
-		//updateResults(false, nil)
+		updateResults(false, nil)
 
-		dom.GetWindow().ClearTimeout(timer)
-		timer = dom.GetWindow().SetTimeout(func() { updateResults(false, nil) }, 200)
+		//dom.GetWindow().ClearTimeout(timer)
+		//timer = dom.GetWindow().SetTimeout(func() { updateResults(false, nil) }, 200)
 
 		/*select {
 		case ch <- struct{}{}:
@@ -268,12 +270,14 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 	windowHalfHeight := dom.GetWindow().InnerHeight() / 2
 	filter := document.GetElementByID("gts-command").(*dom.HTMLInputElement).Value
 	lowerFilter := strings.ToLower(filter)
+	//js.Global.Set("my-lower-filter", lowerFilter)
 
 	results := document.GetElementByID("gts-results").(*dom.HTMLDivElement)
 
 	var selectionPreserved = false
 
-	results.SetInnerHTML("")
+	//results.SetInnerHTML("")
+	//var ns []*html.Node
 	var visibleIndex int
 	for _, header := range headers {
 		/*if filter != "" && !strings.Contains(strings.ToLower(header.TextContent()), lowerFilter) {
@@ -282,8 +286,11 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		if filter != "" && header.Underlying().Get("textContent").Call("toLowerCase").Call("indexOf", lowerFilter).Int() == -1 {
 			continue
 		}
+		/*if filter != "" && header.Underlying().Get("textContent").Call("toLowerCase").Call("indexOf", js.Global.Get("my-lower-filter")).Int() == -1 {
+			continue
+		}*/
 
-		element := document.CreateElement("div")
+		/*element := document.CreateElement("div")
 		element.Class().Add("gts-entry")
 		element.SetAttribute("data-id", header.ID())
 		{
@@ -291,6 +298,15 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 			index := strings.Index(strings.ToLower(entry), lowerFilter)
 			element.SetInnerHTML(html.EscapeString(entry[:index]) + "<strong>" + html.EscapeString(entry[index:index+len(filter)]) + "</strong>" + html.EscapeString(entry[index+len(filter):]))
 		}
+		results.AppendChild(element)*/
+		/*entry := header.TextContent()
+		index := strings.Index(strings.ToLower(entry), lowerFilter)
+		p1 := html_gen.Text(entry[:index])
+		p2 := Strong(entry[index : index+len(filter)]) // This can be optimized out of loop?
+		p3 := html_gen.Text(entry[index+len(filter):])
+		n := CustomDiv(p1, p2, p3, "gts-entry", header.ID())
+		ns = append(ns, n)*/
+
 		if header.ID() == manuallyPicked {
 			selectionPreserved = true
 
@@ -298,14 +314,18 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 			previouslySelected = visibleIndex
 		}
 
-		results.AppendChild(element)
-
 		visibleIndex++
 
-		if visibleIndex >= 1000 {
+		/*if visibleIndex >= 1000 {
 			break
-		}
+		}*/
 	}
+	results.SetInnerHTML(`<div class="gts-entry" data-id="bufio">stuff goes there</div><div class="gts-entry" data-id="strings">more stuff</div>`)
+	/*innerHtml, err := html_gen.RenderNodes(ns...)
+	if err != nil {
+		panic(err)
+	}
+	results.SetInnerHTML(string(innerHtml))*/
 
 	entries = results.ChildNodes()
 
@@ -376,4 +396,39 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 	}
 
 	fmt.Println("updateResults:", time.Since(started).Seconds())
+}
+
+// ---
+
+// TODO: Move into html_gen?
+
+// Strong returns an a strong text element <strong>{{.s}}</strong>.
+func Strong(s string) *html.Node {
+	return &html.Node{
+		Type: html.ElementNode, Data: "strong",
+		FirstChild: html_gen.Text(s),
+	}
+}
+
+// Div returns an a div element that contains a single node n.
+/*func Div(n *html.Node) *html.Node {
+	return &html.Node{
+		Type: html.ElementNode, Data: "div",
+		FirstChild: n,
+	}
+}*/
+func CustomDiv(p1, p2, p3 *html.Node, class string, dataId string) *html.Node {
+	p1.NextSibling = p2
+	p2.PrevSibling = p1
+	p2.NextSibling = p3
+	p3.PrevSibling = p2
+	return &html.Node{
+		Type: html.ElementNode, Data: "div",
+		Attr: []html.Attribute{
+			{Key: "class", Val: class},
+			{Key: "data-id", Val: dataId},
+		},
+		FirstChild: p1,
+		LastChild:  p3,
+	}
 }
