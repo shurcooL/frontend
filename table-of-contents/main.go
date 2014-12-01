@@ -13,7 +13,15 @@ var document = dom.GetWindow().Document().(dom.HTMLDocument)
 var headers []dom.Element
 var results *dom.HTMLDivElement
 
-func main() {
+func main() {}
+
+func init() {
+	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
+		setup()
+	})
+}
+
+func setup() {
 	headers = document.Body().GetElementsByTagName("h2")
 	if len(headers) == 0 {
 		return

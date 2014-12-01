@@ -24,7 +24,15 @@ var entryHeight float64
 var entries []dom.Node
 var manuallyPicked string
 
-func main() {
+func main() {}
+
+func init() {
+	document.AddEventListener("DOMContentLoaded", false, func(_ dom.Event) {
+		setup()
+	})
+}
+
+func setup() {
 	overlay := document.CreateElement("div").(*dom.HTMLDivElement)
 	overlay.SetID("gts-overlay")
 
