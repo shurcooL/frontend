@@ -1,0 +1,54 @@
+<html>
+	<body>
+		<h1>Index</h1>
+		<script type="text/javascript" src="./testdata/all-Go-packages_test.js"></script>
+
+		<link href="./style.css" rel="stylesheet">
+		<script type="text/go" src="./main.go"></script>
+		<script type="text/javascript">
+var headers = document.body.getElementsByTagName("h3");
+
+console.log(headers.length);
+
+var headerStrings = [];
+for (var i = 0; i < headers.length; i++) {
+	headerStrings[i] = headers[i].textContent.toLowerCase();
+}
+
+document.body.addEventListener("keydown", function (e) {
+	if (e.keyIdentifier != "U+004A") { // J.
+		return;
+	}
+
+	console.time("js_iter_50k");
+
+	var filter = document.getElementById("gts-command").value;
+	var lowerFilter = filter.toLowerCase();
+	//var lowerFilter = filter;
+
+	var matches = 0;
+
+	/*for (var i = 0; i < headers.length; i++) {
+		//if (filter != "" && headers[i].textContent.toLowerCase().indexOf(lowerFilter) == -1) {
+		if (filter != "" && headers[i].textContent.indexOf(lowerFilter) == -1) {
+			continue;
+		}
+
+		matches++;
+	}*/
+	for (var i = 0; i < headerStrings.length; i++) {
+		//if (filter != "" && headers[i].textContent.toLowerCase().indexOf(lowerFilter) == -1) {
+		if (filter != "" && headerStrings[i].indexOf(lowerFilter) == -1) {
+			continue;
+		}
+
+		matches++;
+	}
+
+	console.log(matches);
+
+	console.timeEnd("js_iter_50k");
+}, false);
+		</script>
+	</body>
+</html>
