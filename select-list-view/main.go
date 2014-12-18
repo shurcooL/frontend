@@ -94,57 +94,53 @@ func setup() {
 
 	overlay.AddEventListener("keydown", false, func(event dom.Event) {
 		switch ke := event.(*dom.KeyboardEvent); {
-		case ke.KeyIdentifier == "U+001B": // Escape.
+		case ke.KeyIdentifier == "U+001B" && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Escape.
 			ke.PreventDefault()
 
 			hideOverlay(overlay)
 
 			if document.ActiveElement().Underlying() == command.Underlying() {
-				//dom.GetWindow().Location().Hash = baseHash
 				js.Global.Get("window").Get("history").Call("replaceState", nil, nil, "#"+baseHash)
 				dom.GetWindow().ScrollTo(baseX, baseY)
 			}
-		case ke.KeyIdentifier == "Enter":
+		case ke.KeyIdentifier == "Enter" && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey:
 			ke.PreventDefault()
 
 			hideOverlay(overlay)
-		case ke.KeyIdentifier == "Down":
+		case ke.KeyIdentifier == "Down" && !ke.CtrlKey && !ke.AltKey && ke.MetaKey && !ke.ShiftKey:
 			ke.PreventDefault()
-
-			switch {
-			case !ke.CtrlKey && !ke.AltKey && ke.MetaKey:
-				selected = len(entries) - 1
-			case ke.CtrlKey && ke.AltKey && !ke.MetaKey:
-				results.Underlying().Set("scrollTop", results.Underlying().Get("scrollTop").Float()+entryHeight)
-				return
-			case !ke.CtrlKey && !ke.AltKey && !ke.MetaKey:
-				selected++
-			}
+			selected = len(entries) - 1
 			updateResultSelection()
-		case ke.KeyIdentifier == "Up":
+		case ke.KeyIdentifier == "Down" && ke.CtrlKey && ke.AltKey && !ke.MetaKey && !ke.ShiftKey:
 			ke.PreventDefault()
-
-			switch {
-			case !ke.CtrlKey && !ke.AltKey && ke.MetaKey:
-				selected = 0
-			case ke.CtrlKey && ke.AltKey && !ke.MetaKey:
-				results.Underlying().Set("scrollTop", results.Underlying().Get("scrollTop").Float()-entryHeight)
-				return
-			case !ke.CtrlKey && !ke.AltKey && !ke.MetaKey:
-				selected--
-			}
+			results.Underlying().Set("scrollTop", results.Underlying().Get("scrollTop").Float()+entryHeight)
+		case ke.KeyIdentifier == "Down" && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey:
+			ke.PreventDefault()
+			selected++
+			updateResultSelection()
+		case ke.KeyIdentifier == "Up" && !ke.CtrlKey && !ke.AltKey && ke.MetaKey && !ke.ShiftKey:
+			ke.PreventDefault()
+			selected = 0
+			updateResultSelection()
+		case ke.KeyIdentifier == "Up" && ke.CtrlKey && ke.AltKey && !ke.MetaKey && !ke.ShiftKey:
+			ke.PreventDefault()
+			results.Underlying().Set("scrollTop", results.Underlying().Get("scrollTop").Float()-entryHeight)
+		case ke.KeyIdentifier == "Up" && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey:
+			ke.PreventDefault()
+			selected--
 			updateResultSelection()
 		}
 	})
 
 	document.Body().AddEventListener("keydown", false, func(event dom.Event) {
 		switch ke := event.(*dom.KeyboardEvent); {
-		case ke.KeyIdentifier == "U+0052": // Cmd+R (or just R, since some browsers don't let us intercept Cmd+R).
-			// Ignore R when command elment has focus (it means the user is typing).
+		case ke.KeyIdentifier == "U+0052" && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Just R, since some browsers don't let us intercept Cmd+R.
+			// Ignore just R when command elment has focus (it means the user is typing).
 			if document.ActiveElement().Underlying() == command.Underlying() {
 				break
 			}
-
+			fallthrough
+		case ke.KeyIdentifier == "U+0052" && !ke.CtrlKey && !ke.AltKey && ke.MetaKey && !ke.ShiftKey: // Cmd+R.
 			ke.PreventDefault()
 
 			if display := overlay.Style().GetPropertyValue("display"); display != "none" && display != "null" {
@@ -171,7 +167,7 @@ func setup() {
 			}
 
 			command.Select()
-		case ke.KeyIdentifier == "U+001B": // Escape.
+		case ke.KeyIdentifier == "U+001B" && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Escape.
 			ke.PreventDefault()
 
 			hideOverlay(overlay)
