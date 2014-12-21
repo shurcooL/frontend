@@ -97,12 +97,12 @@ func setup() {
 		case ke.KeyCode == 27 && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Escape.
 			ke.PreventDefault()
 
-			hideOverlay(overlay)
-
 			if document.ActiveElement().Underlying() == command.Underlying() {
 				js.Global.Get("window").Get("history").Call("replaceState", nil, nil, "#"+baseHash)
 				dom.GetWindow().ScrollTo(baseX, baseY)
 			}
+
+			hideOverlay(overlay)
 		case ke.KeyCode == 13 && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Enter.
 			ke.PreventDefault()
 
@@ -143,7 +143,8 @@ func setup() {
 		case ke.KeyCode == int('R') && !ke.CtrlKey && !ke.AltKey && ke.MetaKey && !ke.ShiftKey: // Cmd+R.
 			ke.PreventDefault()
 
-			if display := overlay.Style().GetPropertyValue("display"); display != "none" && display != "null" {
+			// Is overlay already being displayed?
+			if display := overlay.Style().GetPropertyValue("display"); display == "initial" {
 				command.Select()
 				break
 			}
@@ -184,6 +185,8 @@ func hideOverlay(overlay dom.HTMLElement) {
 		previouslyHighlightedHeader.Class().Remove("highlighted")
 		previouslyHighlightedHeader.Class().Add("highlighted-fade")
 	}
+
+	document.GetElementByID("gts-command").(dom.HTMLElement).Blur() // Deselect the command input; needed in Firefox so body regains focus.
 }
 
 var previouslySelected int
