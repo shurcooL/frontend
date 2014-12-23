@@ -212,9 +212,9 @@ func updateResultSelection() {
 	{
 		element := entries[selected].(dom.Element)
 
-		if element.GetBoundingClientRect().Top <= results.GetBoundingClientRect().Top {
+		if element.GetBoundingClientRect().Top < results.GetBoundingClientRect().Top {
 			element.Underlying().Call("scrollIntoView", true)
-		} else if element.GetBoundingClientRect().Bottom >= results.GetBoundingClientRect().Bottom {
+		} else if element.GetBoundingClientRect().Bottom > results.GetBoundingClientRect().Bottom {
 			element.Underlying().Call("scrollIntoView", false)
 		}
 
