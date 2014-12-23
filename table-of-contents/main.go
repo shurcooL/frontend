@@ -31,6 +31,7 @@ func setup() {
 	overlay.SetID("toc-overlay")
 
 	results = document.CreateElement("div").(*dom.HTMLDivElement)
+	results.SetID("toc-results")
 
 	for _, header := range headers {
 		element := document.CreateElement("div").(*dom.HTMLDivElement)

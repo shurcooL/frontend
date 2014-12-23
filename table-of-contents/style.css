@@ -1,12 +1,18 @@
 #toc-overlay {
 	position: fixed;
-	top: 15;
-	right: 15;
+	top: 15px;
+	right: 15px;
+	bottom: 50px;
 	z-index: 1000;
-	border: 1px solid lightgray;
 
 	font-family: Menlo, monospace;
 	font-size: 12px;
+}
+
+#toc-results {
+	overflow: scroll;
+	max-height: 100%;
+	border: 1px solid lightgray;
 }
 
 div.toc-entry {
