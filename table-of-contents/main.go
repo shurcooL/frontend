@@ -71,7 +71,17 @@ func updateToc() {
 	for i := len(headers) - 1; i >= 0; i-- {
 		header := headers[i]
 		if header.GetBoundingClientRect().Top <= windowHalfHeight || i == 0 {
-			results.ChildNodes()[i].(dom.Element).Class().Add("toc-highlighted")
+			element := results.ChildNodes()[i].(dom.Element)
+
+			// Disabled because it causes some problems, helps in rare situations.
+			/*if element.GetBoundingClientRect().Top < results.GetBoundingClientRect().Top {
+				element.Underlying().Call("scrollIntoView", true)
+			} else if element.GetBoundingClientRect().Bottom > results.GetBoundingClientRect().Bottom {
+				element.Underlying().Call("scrollIntoView", false)
+			}*/
+
+			element.Class().Add("toc-highlighted")
+
 			break
 		}
 	}
