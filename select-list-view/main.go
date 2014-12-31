@@ -257,7 +257,12 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 	results.SetInnerHTML("")
 	var visibleIndex int
 	for _, header := range headers {
-		if filter != "" && !strings.Contains(strings.ToLower(header.TextContent()), strings.ToLower(filter)) {
+		entry := header.TextContent()
+		if header.HasAttribute("data-display") {
+			entry = header.GetAttribute("data-display")
+		}
+
+		if filter != "" && !strings.Contains(strings.ToLower(entry), strings.ToLower(filter)) {
 			continue
 		}
 
@@ -265,7 +270,6 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		element.Class().Add("gts-entry")
 		element.SetAttribute("data-id", header.ID())
 		{
-			entry := header.TextContent()
 			index := strings.Index(strings.ToLower(entry), strings.ToLower(filter))
 			element.SetInnerHTML(html.EscapeString(entry[:index]) + "<strong>" + html.EscapeString(entry[index:index+len(filter)]) + "</strong>" + html.EscapeString(entry[index+len(filter):]))
 		}
