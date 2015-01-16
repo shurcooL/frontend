@@ -23,7 +23,7 @@ func SelectMenuOnInput(event dom.Event, object dom.HTMLElement, defaultOption, q
 
 	/*selectedIndex := selectElement.Underlying().Get("selectedIndex").Int()
 	selected := selectElement.Options()[selectedIndex].Text*/
-	selected := selectElement.Underlying().Get("selectedOptions").Index(0).Get("text").Str()
+	selected := selectElement.Underlying().Get("selectedOptions").Index(0).Get("text").String()
 
 	if selected == defaultOption {
 		query.Del(queryParameter)
