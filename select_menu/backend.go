@@ -12,6 +12,7 @@ import (
 	"golang.org/x/net/html"
 )
 
+// New creates the HTML for a select menu instance with the specified parameters.
 func New(options []string, defaultOption string, query url.Values, queryParameter string) template.HTML {
 	//selectElement := document.CreateElement("select").(*dom.HTMLSelectElement)
 	selectElement := &html.Node{Type: html.ElementNode, Data: "select"}
