@@ -4,6 +4,7 @@
 	right: 15px;
 	bottom: 50px;
 	z-index: 1000;
+	pointer-events: none;
 
 	font-family: Menlo, monospace;
 	font-size: 12px;
@@ -13,6 +14,7 @@
 	overflow: scroll;
 	max-height: 100%;
 	border: 1px solid lightgray;
+	pointer-events: initial;
 }
 
 div.toc-entry {
