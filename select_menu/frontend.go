@@ -31,5 +31,15 @@ func SelectMenuOnInput(event dom.Event, object dom.HTMLElement, defaultOption, q
 		query.Set(queryParameter, selected)
 	}
 
+	var originalSelected int
+	options := selectElement.Underlying().Get("options")
+	for i := 0; i < options.Length(); i++ {
+		if options.Index(i).Get("defaultSelected").Bool() {
+			originalSelected = i
+			break
+		}
+	}
+	selectElement.Underlying().Set("selectedIndex", originalSelected)
+
 	dom.GetWindow().Location().Search = "?" + query.Encode()
 }

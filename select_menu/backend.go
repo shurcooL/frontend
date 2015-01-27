@@ -61,6 +61,10 @@ func New(options []string, defaultOption string, query url.Values, queryParamete
 		// HACK: Don't use Sprintf, properly encode (as json at this time).
 		Val: fmt.Sprintf(`SelectMenuOnInput(event, this, %q, %q);`, strconv.Quote(defaultOption), strconv.Quote(queryParameter)),
 	})
+	selectElement.Attr = append(selectElement.Attr, html.Attribute{
+		Key: "onload",
+		Val: `alert('loaded');`,
+	})
 
 	html, err := html_gen.RenderNodes(selectElement)
 	if err != nil {
