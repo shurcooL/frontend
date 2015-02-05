@@ -46,12 +46,3 @@ func New(defaultValue bool, query url.Values, queryParameter string) template.HT
 	}
 	return html
 }
-
-func contains(ss []string, t string) bool {
-	for _, s := range ss {
-		if s == t {
-			return true
-		}
-	}
-	return false
-}
