@@ -14,16 +14,19 @@ import (
 func Test(t *testing.T) {
 	http.Handle("/script.go.js", gopherjs_http.StaticGoFiles("./frontend.go"))
 
-	options := []string{"option one", "option two (default)", "option three", "option four", "option five"}
-	defaultOption := "option two (default)"
-	queryParameter := "parameter"
-	http.HandleFunc("/index.html", func(w http.ResponseWriter, req *http.Request) {
-		query := req.URL.Query()
+	{
+		options := []string{"option one", "option two (default)", "option three", "option four", "option five"}
+		defaultOption := "option two (default)"
+		queryParameter := "parameter"
 
-		selectMenuHtml := select_menu.New(options, defaultOption, query, queryParameter)
+		http.HandleFunc("/index.html", func(w http.ResponseWriter, req *http.Request) {
+			query := req.URL.Query()
 
-		io.WriteString(w, `<html><head><script type="text/javascript" src="/script.go.js"></script></head><body>`+string(selectMenuHtml)+"</body></html>")
-	})
+			selectMenuHtml := select_menu.New(options, defaultOption, query, queryParameter)
+
+			io.WriteString(w, `<html><head><script type="text/javascript" src="/script.go.js"></script></head><body>`+string(selectMenuHtml)+"</body></html>")
+		})
+	}
 
 	ts := httptest.NewServer(nil)
 	defer ts.Close()
