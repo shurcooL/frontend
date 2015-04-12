@@ -41,9 +41,10 @@ func setup() {
 		href := "#" + sanitized_anchor_name.Create(header.TextContent())
 		target := header.(dom.HTMLElement)
 		element.AddEventListener("click", false, func(event dom.Event) {
-			windowHalfHeight := dom.GetWindow().InnerHeight() * 2 / 5
 			//dom.GetWindow().History().ReplaceState(nil, nil, href)
 			js.Global.Get("window").Get("history").Call("replaceState", nil, nil, href)
+
+			windowHalfHeight := dom.GetWindow().InnerHeight() * 2 / 5
 			dom.GetWindow().ScrollTo(dom.GetWindow().ScrollX(), int(target.OffsetTop()+target.OffsetHeight())-windowHalfHeight)
 		})
 
