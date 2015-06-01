@@ -235,14 +235,23 @@ func updateResultSelection() {
 	previouslySelected = selected
 }
 
+// offsetTopRoot returns the offset top of element e relative to root element.
+func offsetTopRoot(e dom.HTMLElement) float64 {
+	var offsetTopRoot float64
+	for ; e != nil; e = e.OffsetParent() {
+		offsetTopRoot += e.OffsetTop()
+	}
+	return offsetTopRoot
+}
+
 func centerOnTargetIfOffscreen(target dom.HTMLElement) {
-	isOffscreen := int(target.OffsetTop()) < dom.GetWindow().ScrollY() ||
-		int(target.OffsetTop()+target.OffsetHeight()) > dom.GetWindow().ScrollY()+dom.GetWindow().InnerHeight()
+	isOffscreen := int(offsetTopRoot(target)) < dom.GetWindow().ScrollY() ||
+		int(offsetTopRoot(target)+target.OffsetHeight()) > dom.GetWindow().ScrollY()+dom.GetWindow().InnerHeight()
 
 	if isOffscreen {
 		windowHalfHeight := dom.GetWindow().InnerHeight() / 2
 
-		dom.GetWindow().ScrollTo(dom.GetWindow().ScrollX(), int(target.OffsetTop()+target.OffsetHeight())-windowHalfHeight)
+		dom.GetWindow().ScrollTo(dom.GetWindow().ScrollX(), int(offsetTopRoot(target)+target.OffsetHeight())-windowHalfHeight)
 	}
 }
 
