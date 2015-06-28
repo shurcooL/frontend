@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/shurcooL/go/html_gen"
+	"github.com/shurcooL/htmlg"
 	"golang.org/x/net/html"
 )
 
@@ -40,7 +40,7 @@ func New(defaultValue bool, query url.Values, queryParameter string) template.HT
 		Val: fmt.Sprintf(`CheckboxOnChange(event, this, %v, %q);`, defaultValue, strconv.Quote(queryParameter)),
 	})
 
-	html, err := html_gen.RenderNodes(inputElement)
+	html, err := htmlg.RenderNodes(inputElement)
 	if err != nil {
 		panic(err)
 	}

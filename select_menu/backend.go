@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/shurcooL/go/html_gen"
+	"github.com/shurcooL/htmlg"
 	"golang.org/x/net/html"
 )
 
@@ -35,7 +35,7 @@ func New(options []string, defaultOption string, query url.Values, queryParamete
 			selectElement.AppendChild(o)*/
 
 			o := &html.Node{Type: html.ElementNode, Data: "option"}
-			o.AppendChild(html_gen.Text(option))
+			o.AppendChild(htmlg.Text(option))
 			if option == selectedOption {
 				o.Attr = append(o.Attr, html.Attribute{Key: "selected"})
 			}
@@ -62,7 +62,7 @@ func New(options []string, defaultOption string, query url.Values, queryParamete
 		Val: fmt.Sprintf(`SelectMenuOnInput(event, this, %q, %q);`, strconv.Quote(defaultOption), strconv.Quote(queryParameter)),
 	})
 
-	html, err := html_gen.RenderNodes(selectElement)
+	html, err := htmlg.RenderNodes(selectElement)
 	if err != nil {
 		panic(err)
 	}
