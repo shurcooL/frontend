@@ -14,47 +14,23 @@ import (
 
 // New creates the HTML for a select menu instance with the specified parameters.
 func New(options []string, defaultOption string, query url.Values, queryParameter string) template.HTML {
-	//selectElement := document.CreateElement("select").(*dom.HTMLSelectElement)
 	selectElement := &html.Node{Type: html.ElementNode, Data: "select"}
 
-	{
-		var selectedOption = defaultOption
-		if query.Get(queryParameter) != "" {
-			selectedOption = query.Get(queryParameter)
-		}
-		if !contains(options, selectedOption) {
-			options = append(options, selectedOption)
-		}
-
-		for _, option := range options {
-			/*o := document.CreateElement("option").(*dom.HTMLOptionElement)
-			o.Text = option
-			if option == selectedOption {
-				o.DefaultSelected = true
-			}
-			selectElement.AppendChild(o)*/
-
-			o := &html.Node{Type: html.ElementNode, Data: "option"}
-			o.AppendChild(htmlg.Text(option))
-			if option == selectedOption {
-				o.Attr = append(o.Attr, html.Attribute{Key: "selected"})
-			}
-			selectElement.AppendChild(o)
-		}
+	var selectedOption = defaultOption
+	if query.Get(queryParameter) != "" {
+		selectedOption = query.Get(queryParameter)
 	}
-
-	/*selectElement.AddEventListener("input", false, func(event dom.Event) {
-		selectedIndex := selectElement.Underlying().Get("selectedIndex").Int()
-		selected := options[selectedIndex]
-
-		if selected == defaultOption {
-			query.Del(queryParameter)
-		} else {
-			query.Set(queryParameter, selected)
+	if !contains(options, selectedOption) {
+		options = append(options, selectedOption)
+	}
+	for _, option := range options {
+		o := &html.Node{Type: html.ElementNode, Data: "option"}
+		o.AppendChild(htmlg.Text(option))
+		if option == selectedOption {
+			o.Attr = append(o.Attr, html.Attribute{Key: "selected"})
 		}
-
-		dom.GetWindow().Location().Search = "?" + query.Encode()
-	})*/
+		selectElement.AppendChild(o)
+	}
 
 	selectElement.Attr = append(selectElement.Attr, html.Attribute{
 		Key: "oninput",

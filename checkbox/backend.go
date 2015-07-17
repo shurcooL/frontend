@@ -23,15 +23,12 @@ func New(defaultValue bool, query url.Values, queryParameter string) template.HT
 		Attr: []html.Attribute{{Key: "type", Val: "checkbox"}},
 	}
 
-	{
-		var selectedValue = defaultValue
-		if _, set := query[queryParameter]; set {
-			selectedValue = !selectedValue
-		}
-
-		if selectedValue {
-			inputElement.Attr = append(inputElement.Attr, html.Attribute{Key: "checked"})
-		}
+	var selectedValue = defaultValue
+	if _, set := query[queryParameter]; set {
+		selectedValue = !selectedValue
+	}
+	if selectedValue {
+		inputElement.Attr = append(inputElement.Attr, html.Attribute{Key: "checked"})
 	}
 
 	inputElement.Attr = append(inputElement.Attr, html.Attribute{
