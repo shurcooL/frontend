@@ -97,7 +97,7 @@ func setup() {
 		case ke.KeyCode == 27 && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Escape.
 			ke.PreventDefault()
 
-			if document.ActiveElement().Underlying() == command.Underlying() {
+			if ke.Target().Underlying() == command.Underlying() {
 				js.Global.Get("window").Get("history").Call("replaceState", nil, nil, "#"+baseHash)
 				dom.GetWindow().ScrollTo(baseX, baseY)
 			}
@@ -138,7 +138,7 @@ func setup() {
 			fallthrough
 		case ke.KeyCode == int('R') && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Just R, since some browsers don't let us intercept Cmd+R.
 			// Ignore just R when command elment has focus (it means the user is typing).
-			if document.ActiveElement().Underlying() == command.Underlying() {
+			if ke.Target().Underlying() == command.Underlying() {
 				break
 			}
 			fallthrough
@@ -146,7 +146,7 @@ func setup() {
 			ke.PreventDefault()
 
 			// Is overlay already being displayed?
-			if display := overlay.Style().GetPropertyValue("display"); display == "initial" {
+			if isOverlayVisible(overlay) {
 				command.Select()
 				break
 			}
@@ -171,9 +171,14 @@ func setup() {
 
 			command.Select()
 		case ke.KeyCode == 27 && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Escape.
-			ke.PreventDefault()
+			// If overlay is not displayed, there's nothing to do.
+			if !isOverlayVisible(overlay) {
+				break
+			}
 
 			hideOverlay(overlay)
+
+			ke.PreventDefault()
 		}
 	})
 }
@@ -189,6 +194,11 @@ func hideOverlay(overlay dom.HTMLElement) {
 	}
 
 	document.GetElementByID("gts-command").(dom.HTMLElement).Blur() // Deselect the command input; needed in Firefox so body regains focus.
+}
+
+// isOverlayVisible returns true iff overlay is being displayed.
+func isOverlayVisible(overlay dom.HTMLElement) bool {
+	return (overlay.Style().GetPropertyValue("display") == "initial")
 }
 
 var previouslySelected int
