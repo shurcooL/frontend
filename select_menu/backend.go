@@ -53,3 +53,42 @@ func contains(ss []string, t string) bool {
 	}
 	return false
 }
+
+/*
+// TODO: Figure this out.
+// NewFrontend creates a select menu instance with the specified parameters.
+func NewFrontend(options []string, defaultOption string, query url.Values, queryParameter string) *dom.HTMLSelectElement {
+	selectElement := document.CreateElement("select").(*dom.HTMLSelectElement)
+
+	var selectedOption = defaultOption
+	if query.Get(queryParameter) != "" {
+		selectedOption = query.Get(queryParameter)
+	}
+	if !contains(options, selectedOption) {
+		options = append(options, selectedOption)
+	}
+	for _, option := range options {
+		o := document.CreateElement("option").(*dom.HTMLOptionElement)
+		o.Text = option
+		if option == selectedOption {
+			o.DefaultSelected = true
+		}
+		selectElement.AppendChild(o)
+	}
+
+	selectElement.AddEventListener("input", false, func(event dom.Event) {
+		selectedIndex := selectElement.Underlying().Get("selectedIndex").Int()
+		selected := options[selectedIndex]
+
+		if selected == defaultOption {
+			query.Del(queryParameter)
+		} else {
+			query.Set(queryParameter, selected)
+		}
+
+		dom.GetWindow().Location().Search = "?" + query.Encode()
+	})
+
+	return selectElement
+}
+*/
