@@ -97,7 +97,7 @@ func setup() {
 		case ke.KeyCode == 27 && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Escape.
 			ke.PreventDefault()
 
-			if ke.Target().Underlying() == command.Underlying() {
+			if ke.Target().IsEqualNode(command) {
 				js.Global.Get("window").Get("history").Call("replaceState", nil, nil, "#"+baseHash)
 				dom.GetWindow().ScrollTo(baseX, baseY)
 			}
@@ -138,7 +138,7 @@ func setup() {
 			fallthrough
 		case ke.KeyCode == int('R') && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey: // Just R, since some browsers don't let us intercept Cmd+R.
 			// Ignore just R when command elment has focus (it means the user is typing).
-			if ke.Target().Underlying() == command.Underlying() {
+			if ke.Target().IsEqualNode(command) {
 				break
 			}
 			fallthrough
