@@ -82,7 +82,7 @@ func setup() {
 		command.Focus()
 
 		me := event.(*dom.MouseEvent)
-		y := (me.ClientY - results.GetBoundingClientRect().Top) + results.Underlying().Get("scrollTop").Int()
+		y := (me.ClientY - int(results.GetBoundingClientRect().Top)) + results.Underlying().Get("scrollTop").Int()
 		selected = int(float64(y) / entryHeight)
 		updateResultSelection()
 	})
@@ -313,7 +313,7 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 				element := entries[i].(dom.Element)
 				header := document.GetElementByID(element.GetAttribute("data-id"))
 
-				if header.GetBoundingClientRect().Top <= windowHalfHeight || i == 0 {
+				if int(header.GetBoundingClientRect().Top) <= windowHalfHeight || i == 0 {
 					selected = i
 					previouslySelected = i
 
@@ -339,7 +339,7 @@ func updateResults(init bool, overlay dom.HTMLElement) {
 		}
 
 		overlay.Style().SetProperty("display", "initial", "")
-		entryHeight = results.FirstChild().(dom.Element).GetBoundingClientRect().Object.Get("height").Float()
+		entryHeight = results.FirstChild().(dom.Element).GetBoundingClientRect().Height
 	} else {
 		if previouslyHighlightedHeader != nil {
 			previouslyHighlightedHeader.Class().Remove("highlighted")

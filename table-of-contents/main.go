@@ -71,7 +71,7 @@ func updateToc() {
 	windowHalfHeight := dom.GetWindow().InnerHeight() * 2 / 5
 	for i := len(headers) - 1; i >= 0; i-- {
 		header := headers[i]
-		if header.GetBoundingClientRect().Top <= windowHalfHeight || i == 0 {
+		if int(header.GetBoundingClientRect().Top) <= windowHalfHeight || i == 0 {
 			results.ChildNodes()[i].(dom.Element).Class().Add("toc-highlighted")
 			break
 		}
