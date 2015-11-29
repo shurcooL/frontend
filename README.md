@@ -23,3 +23,8 @@ open http://localhost:8080/index.html # Open http://localhost:8080/index.html in
 ```
 
 Changes to .go code are reloaded on every request, so you can make changes, refresh browser to see new version. Watch browser console for errors.
+
+License
+-------
+
+-	[MIT License](LICENSE)
