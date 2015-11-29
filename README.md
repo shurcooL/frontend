@@ -14,6 +14,8 @@ go get -u -d -tags=js github.com/shurcooL/frontend/...
 Testing Locally
 ---------------
 
+Note: `gopherjs_serve_html` is superceded by the official `gopherjs serve` command. These instructions should be updated to use that instead.
+
 For packages that have any `_test.html` files, you can use [`gopherjs_serve_html`](http://godoc.org/github.com/shurcooL/cmd/gopherjs_serve_html) to serve said test. For example:
 
 ```bash
