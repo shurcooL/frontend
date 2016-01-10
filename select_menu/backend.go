@@ -10,6 +10,7 @@ import (
 
 	"github.com/shurcooL/htmlg"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 // New creates the HTML for a select menu instance with the specified parameters.
@@ -27,7 +28,7 @@ func New(options []string, defaultOption string, query url.Values, queryParamete
 		o := &html.Node{Type: html.ElementNode, Data: "option"}
 		o.AppendChild(htmlg.Text(option))
 		if option == selectedOption {
-			o.Attr = append(o.Attr, html.Attribute{Key: "selected"})
+			o.Attr = append(o.Attr, html.Attribute{Key: atom.Selected.String()})
 		}
 		selectElement.AppendChild(o)
 	}

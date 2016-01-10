@@ -10,6 +10,7 @@ import (
 
 	"github.com/shurcooL/htmlg"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 // New creates the HTML for a checkbox instance. Its checked value is directly connected
@@ -20,7 +21,7 @@ func New(defaultValue bool, query url.Values, queryParameter string) template.HT
 	inputElement := &html.Node{
 		Type: html.ElementNode,
 		Data: "input",
-		Attr: []html.Attribute{{Key: "type", Val: "checkbox"}},
+		Attr: []html.Attribute{{Key: atom.Type.String(), Val: "checkbox"}},
 	}
 
 	var selectedValue = defaultValue
