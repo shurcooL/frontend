@@ -8,7 +8,7 @@ import (
 
 	"github.com/shurcooL/frontend/select_menu"
 	"github.com/shurcooL/go/gopherjs_http"
-	"github.com/shurcooL/go/u/u4"
+	"github.com/shurcooL/go/open"
 )
 
 func Test(t *testing.T) {
@@ -31,7 +31,7 @@ func Test(t *testing.T) {
 	ts := httptest.NewServer(nil)
 	defer ts.Close()
 
-	u4.Open(ts.URL + "/index.html")
+	open.Open(ts.URL + "/index.html")
 
 	select {}
 }
