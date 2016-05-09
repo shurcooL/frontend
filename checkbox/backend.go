@@ -1,5 +1,6 @@
 // +build !js
 
+// Package checkbox provides a checkbox connected to a query parameter.
 package checkbox
 
 import (
