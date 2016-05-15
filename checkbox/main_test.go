@@ -1,3 +1,5 @@
+// +build browsertest
+
 package checkbox_test
 
 import (

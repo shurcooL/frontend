@@ -1,3 +1,5 @@
+// +build browsertest
+
 package select_menu_test
 
 import (
