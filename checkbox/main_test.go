@@ -11,10 +11,11 @@ import (
 	"github.com/shurcooL/frontend/checkbox"
 	"github.com/shurcooL/go/gopherjs_http"
 	"github.com/shurcooL/go/open"
+	"github.com/shurcooL/httpfs/httputil"
 )
 
 func Test(t *testing.T) {
-	http.Handle("/script.go.js", gopherjs_http.StaticGoFiles("./frontend.go"))
+	http.Handle("/script.js", httputil.FileHandler{gopherjs_http.Package("github.com/shurcooL/frontend/checkbox")})
 
 	{
 		defaultValue := false
@@ -25,7 +26,7 @@ func Test(t *testing.T) {
 
 			checkboxHtml := checkbox.New(defaultValue, query, queryParameter)
 
-			io.WriteString(w, `<html><head><script type="text/javascript" src="/script.go.js"></script></head><body>`+string(checkboxHtml)+"</body></html>")
+			io.WriteString(w, `<html><head><script type="text/javascript" src="/script.js"></script></head><body>`+string(checkboxHtml)+"</body></html>")
 		})
 	}
 

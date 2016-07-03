@@ -1,18 +1,26 @@
 package handler
 
 import (
+	"go/build"
+	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/shurcooL/go/gopherjs_http"
+	"github.com/shurcooL/httpfs/httputil"
+	"github.com/shurcooL/httpfs/vfsutil"
 )
 
 func init() {
-	// HACK: Relative path, assuming starting in Conception-go folder.
-	// TODO: Need a better way that will work for any package importing this...
-	http.Handle("/table-of-contents.go.js", gopherjs_http.GoFiles("../frontend/table-of-contents/main.go"))
-	http.HandleFunc("/table-of-contents.css", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "../frontend/table-of-contents/style.css")
-	})
+	// HACK: This code registers routes at root on default mux... That's not very nice.
+	http.Handle("/table-of-contents.js", httputil.FileHandler{gopherjs_http.Package("github.com/shurcooL/frontend/table-of-contents")})
+	http.Handle("/table-of-contents.css", httputil.FileHandler{vfsutil.File(filepath.Join(importPathToDir("github.com/shurcooL/frontend/table-of-contents"), "style.css"))})
+}
 
-	//http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "main.go") }) // Test of relative path...
+func importPathToDir(importPath string) string {
+	p, err := build.Import(importPath, "", build.FindOnly)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return p.Dir
 }
