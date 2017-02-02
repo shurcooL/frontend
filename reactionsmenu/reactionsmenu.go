@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
+	"github.com/shurcooL/component"
 	"github.com/shurcooL/go/gopherjs_http/jsutil"
 	homecomponent "github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
@@ -63,7 +64,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 		signIn := document.CreateElement("div").(*dom.HTMLDivElement)
 		signIn.SetClass("rm-reactions-menu-signin")
 		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
-		signIn.SetInnerHTML(htmlg.RenderComponentsString(homecomponent.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, resumecomponent.Text(" to react.")))
+		signIn.SetInnerHTML(htmlg.RenderComponentsString(homecomponent.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, component.Text(" to react.")))
 		disabled.AppendChild(signIn)
 		container.AppendChild(disabled)
 	}
