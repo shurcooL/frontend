@@ -39,7 +39,7 @@ func New(options []string, defaultOption string, query url.Values, queryParamete
 		Val: fmt.Sprintf(`SelectMenuOnInput(event, this, %q, %q);`, strconv.Quote(defaultOption), strconv.Quote(queryParameter)),
 	})
 
-	return htmlg.Render(selectElement)
+	return template.HTML(htmlg.Render(selectElement))
 }
 
 func contains(ss []string, t string) bool {

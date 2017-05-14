@@ -103,7 +103,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 				CurrentUser: rm.authenticatedUser,
 				ReactableID: rm.reactableID,
 			}
-			rm.reactableContainer.SetInnerHTML(string(htmlg.Render(inner.Render()...)))
+			rm.reactableContainer.SetInnerHTML(htmlg.Render(inner.Render()...))
 		}()
 		rm.hide()
 	})
@@ -225,7 +225,7 @@ func (rm *reactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 			CurrentUser: rm.authenticatedUser,
 			ReactableID: reactableID,
 		}
-		container.SetInnerHTML(string(htmlg.Render(inner.Render()...)))
+		container.SetInnerHTML(htmlg.Render(inner.Render()...))
 	}()
 }
 

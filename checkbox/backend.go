@@ -39,5 +39,5 @@ func New(defaultValue bool, query url.Values, queryParameter string) template.HT
 		Val: fmt.Sprintf(`CheckboxOnChange(event, this, %v, %q);`, defaultValue, strconv.Quote(queryParameter)),
 	})
 
-	return htmlg.Render(inputElement)
+	return template.HTML(htmlg.Render(inputElement))
 }
