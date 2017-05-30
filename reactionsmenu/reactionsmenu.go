@@ -31,7 +31,7 @@ type reactionsMenu struct {
 	filter  *dom.HTMLInputElement
 	results *dom.HTMLDivElement
 
-	filtered []string
+	filtered []string // Filtered emojiIDs from reactions.Sorted list. With colons, e.g., ":+1:".
 
 	// From last Show, needed to rerender reactableContainer after toggling a reaction.
 	reactableID        string
@@ -91,9 +91,9 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 		if i < 0 || i >= len(rm.filtered) {
 			return
 		}
-		emojiID := rm.filtered[i]
+		reaction := reactions.EmojiID(strings.Trim(rm.filtered[i], ":")) // Trim colons because reactions.Sorted has them, but reactions.EmojiID shouldn't.
 		go func() {
-			reactions, err := rm.reactionsService.Toggle(context.TODO(), rm.reactableURI, rm.reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(strings.Trim(emojiID, ":"))})
+			reactions, err := rm.reactionsService.Toggle(context.TODO(), rm.reactableURI, rm.reactableID, reactions.ToggleRequest{Reaction: reaction})
 			if err != nil {
 				log.Println(err)
 				return
@@ -164,6 +164,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 	})
 }
 
+// Show shows the reactions menu.
 func (rm *reactionsMenu) Show(this dom.HTMLElement, event dom.Event, reactableID string) {
 	rm.reactableID = reactableID
 	rm.reactableContainer = document.GetElementByID("reactable-container-" + reactableID)
@@ -205,7 +206,8 @@ func (rm *reactionsMenu) hide() {
 	rm.menu.Style().SetProperty("display", "none", "")
 }
 
-func (rm *reactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, emojiID string) {
+// ToggleReaction toggles reaction. reaction is withot colons, e.g., "+1".
+func (rm *reactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, reaction reactions.EmojiID) {
 	container := getAncestorByClassName(this, "reactable-container")
 	reactableID := container.GetAttribute("data-reactableID")
 
@@ -215,7 +217,7 @@ func (rm *reactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 	}
 
 	go func() {
-		reactions, err := rm.reactionsService.Toggle(context.TODO(), rm.reactableURI, reactableID, reactions.ToggleRequest{Reaction: reactions.EmojiID(emojiID)})
+		reactions, err := rm.reactionsService.Toggle(context.TODO(), rm.reactableURI, reactableID, reactions.ToggleRequest{Reaction: reaction})
 		if err != nil {
 			log.Println(err)
 			return
