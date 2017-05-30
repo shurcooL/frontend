@@ -13,7 +13,7 @@ import (
 	homecomponent "github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
-	resumecomponent "github.com/shurcooL/resume/component"
+	reactionscomponent "github.com/shurcooL/reactions/component"
 	"github.com/shurcooL/users"
 	"honnef.co/go/js/dom"
 )
@@ -98,7 +98,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 				log.Println(err)
 				return
 			}
-			inner := resumecomponent.ReactionsBarInner{
+			inner := reactionscomponent.ReactionsBarInner{
 				Reactions:   reactions,
 				CurrentUser: rm.authenticatedUser,
 				ReactableID: rm.reactableID,
@@ -220,7 +220,7 @@ func (rm *reactionsMenu) ToggleReaction(this dom.HTMLElement, event dom.Event, e
 			log.Println(err)
 			return
 		}
-		inner := resumecomponent.ReactionsBarInner{
+		inner := reactionscomponent.ReactionsBarInner{
 			Reactions:   reactions,
 			CurrentUser: rm.authenticatedUser,
 			ReactableID: reactableID,
