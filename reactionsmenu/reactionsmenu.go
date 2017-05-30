@@ -166,7 +166,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 
 func (rm *reactionsMenu) Show(this dom.HTMLElement, event dom.Event, reactableID string) {
 	rm.reactableID = reactableID
-	rm.reactableContainer = getAncestorByClassName(this, "reactable-container") // This requires NewReaction component to be inside reactable container.
+	rm.reactableContainer = document.GetElementByID("reactable-container-" + reactableID)
 
 	rm.filter.Value = ""
 	rm.filter.Underlying().Call("dispatchEvent", js.Global.Get("CustomEvent").New("input")) // Trigger "input" event listeners.
