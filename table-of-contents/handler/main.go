@@ -1,3 +1,5 @@
+// Package handler registers "/table-of-contents.{js,css}" routes
+// on http.DefaultServeMux on init.
 package handler
 
 import (
