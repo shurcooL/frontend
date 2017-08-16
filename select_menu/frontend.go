@@ -3,8 +3,8 @@
 package select_menu
 
 import (
+	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/shurcooL/go/gopherjs_http/jsutil"
@@ -15,19 +15,18 @@ func init() {
 	js.Global.Set("SelectMenuOnInput", jsutil.Wrap(SelectMenuOnInput))
 }
 
-func SelectMenuOnInput(event dom.Event, object dom.HTMLElement, defaultOption, queryParameter string) {
-	rawQuery := strings.TrimPrefix(dom.GetWindow().Location().Search, "?")
-	query, _ := url.ParseQuery(rawQuery)
-
-	selectElement := object.(*dom.HTMLSelectElement)
-
-	selected := selectElement.SelectedOptions()[0].Text
-
-	if selected == defaultOption {
+func SelectMenuOnInput(event dom.Event, selElem dom.HTMLElement, defaultOption, queryParameter string) {
+	url, err := url.Parse(dom.GetWindow().Location().Href)
+	if err != nil {
+		// We don't expect this can ever happen, so treat it as an internal error if it does.
+		panic(fmt.Errorf("internal error: parsing window.location.href as URL failed: %v", err))
+	}
+	query := url.Query()
+	if selected := selElem.(*dom.HTMLSelectElement).SelectedOptions()[0].Text; selected == defaultOption {
 		query.Del(queryParameter)
 	} else {
 		query.Set(queryParameter, selected)
 	}
-
-	dom.GetWindow().Location().Search = "?" + query.Encode()
+	url.RawQuery = query.Encode()
+	dom.GetWindow().Location().Href = url.String()
 }
