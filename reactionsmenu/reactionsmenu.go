@@ -52,6 +52,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 
 	rm.menu = document.CreateElement("div").(*dom.HTMLDivElement)
 	rm.menu.SetID("rm-reactions-menu")
+	rm.menu.Style().SetProperty("display", "none", "")
 
 	container := document.CreateElement("div").(*dom.HTMLDivElement)
 	container.SetClass("rm-reactions-menu-container")
@@ -129,43 +130,67 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 		rm.updateSelected(i)
 	})
 
-	document.AddEventListener("keydown", false, func(event dom.Event) {
+	document.Body().AddEventListener("keydown", false, func(event dom.Event) {
 		if event.DefaultPrevented() {
 			return
 		}
-		// Ignore when some element other than body has focus (it means the user is typing elsewhere).
-		/*if !event.Target().IsEqualNode(document.Body()) {
-			return
-		}*/
 
 		switch ke := event.(*dom.KeyboardEvent); {
 		// Escape.
 		case ke.KeyCode == 27 && !ke.Repeat && !ke.CtrlKey && !ke.AltKey && !ke.MetaKey && !ke.ShiftKey:
-			if rm.menu.Style().GetPropertyValue("display") == "none" {
+			if rm.isHidden() {
 				return
 			}
-
-			rm.menu.Style().SetProperty("display", "none", "")
-
+			rm.hide()
 			ke.PreventDefault()
 		}
 	})
 
-	document.Body().AppendChild(rm.menu)
-
-	document.AddEventListener("click", false, func(event dom.Event) {
+	bodyClick := func(event dom.Event) {
 		if event.DefaultPrevented() {
 			return
 		}
-
-		if !rm.menu.Contains(event.Target()) {
-			rm.hide()
+		if rm.menu.Contains(event.Target()) {
+			return
 		}
+		if rm.isHidden() {
+			return
+		}
+		rm.hide()
+		event.PreventDefault()
+	}
+	// Use capture because we want click-outside-to-close to get handled before others.
+	document.Body().AddEventListener("click", true, bodyClick)
+	addTapEventListener(document.Body(), true, bodyClick)
+
+	document.Body().AppendChild(rm.menu)
+}
+
+// addTapEventListener adds a virtual tap event listener to et.
+// A tap is considered to occur when the first touch point starts and ends in same spot,
+// without moving or canceling or other touches starting.
+func addTapEventListener(et dom.EventTarget, useCapture bool, listener func(dom.Event)) {
+	var tapArmed bool
+	et.AddEventListener("touchstart", useCapture, func(evt dom.Event) {
+		firstTouch := len(evt.(*dom.TouchEvent).Touches()) == 1
+		tapArmed = firstTouch // Tap is armed only when the first touch starts.
+	})
+	et.AddEventListener("touchmove", useCapture, func(dom.Event) { tapArmed = false })
+	et.AddEventListener("touchcancel", useCapture, func(dom.Event) { tapArmed = false })
+	et.AddEventListener("touchend", useCapture, func(evt dom.Event) {
+		if !tapArmed {
+			return
+		}
+		listener(evt)
 	})
 }
 
 // Show shows the reactions menu.
 func (rm *reactionsMenu) Show(this dom.HTMLElement, event dom.Event, reactableID string) {
+	if event.DefaultPrevented() {
+		return
+	}
+
 	rm.reactableID = reactableID
 	rm.reactableContainer = document.GetElementByID("reactable-container-" + reactableID)
 
@@ -204,6 +229,10 @@ func (rm *reactionsMenu) Show(this dom.HTMLElement, event dom.Event, reactableID
 
 func (rm *reactionsMenu) hide() {
 	rm.menu.Style().SetProperty("display", "none", "")
+}
+
+func (rm *reactionsMenu) isHidden() bool {
+	return rm.menu.Style().GetPropertyValue("display") == "none"
 }
 
 // ToggleReaction toggles reaction. reaction is withot colons, e.g., "+1".
