@@ -5,16 +5,17 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"strings"
 
 	"github.com/gopherjs/gopherjs/js"
-	"github.com/shurcooL/component"
 	"github.com/shurcooL/go/gopherjs_http/jsutil"
-	homecomponent "github.com/shurcooL/home/component"
 	"github.com/shurcooL/htmlg"
 	"github.com/shurcooL/reactions"
 	reactionscomponent "github.com/shurcooL/reactions/component"
 	"github.com/shurcooL/users"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"honnef.co/go/js/dom"
 )
 
@@ -65,7 +66,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 		signIn := document.CreateElement("div").(*dom.HTMLDivElement)
 		signIn.SetClass("rm-reactions-menu-signin")
 		returnURL := dom.GetWindow().Location().Pathname + dom.GetWindow().Location().Search
-		signIn.SetInnerHTML(htmlg.RenderComponentsString(homecomponent.PostButton{Action: "/login/github", Text: "Sign in via GitHub", ReturnURL: returnURL}, component.Text(" to react.")))
+		signIn.SetInnerHTML(signInHTML(returnURL) + " to react.")
 		disabled.AppendChild(signIn)
 		container.AppendChild(disabled)
 	}
@@ -164,6 +165,21 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 	addTapEventListener(document.Body(), true, bodyClick)
 
 	document.Body().AppendChild(rm.menu)
+}
+
+// TODO: Come up with API that will allow providing a custom signInHTML implementation.
+func signInHTML(returnURL string) string {
+	const style = `a.Login { color: #4183c4; text-decoration: none; } a.Login:hover { text-decoration: underline; }`
+	u := url.URL{Path: "/login", RawQuery: url.Values{"return": {returnURL}}.Encode()}
+	signInViaURL := &html.Node{
+		Type: html.ElementNode, Data: atom.A.String(),
+		Attr: []html.Attribute{
+			{Key: atom.Class.String(), Val: "Login"},
+			{Key: atom.Href.String(), Val: u.String()},
+		},
+		FirstChild: htmlg.Text("Sign in via URL"),
+	}
+	return "<style>" + style + "</style>" + htmlg.Render(signInViaURL)
 }
 
 // addTapEventListener adds a virtual tap event listener to et.
