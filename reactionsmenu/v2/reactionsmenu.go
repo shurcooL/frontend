@@ -138,7 +138,14 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 			return
 		}
 
-		switch ke := event.(*dom.KeyboardEvent); {
+		ke, ok := event.(*dom.KeyboardEvent)
+		if !ok {
+			// Modern browsers send a custom event with "keydown" type when an auto-complete entry
+			// is picked, so we may get a *dom.BasicEvent{Type: "keydown"} or *dom.CustomEvent{...}
+			// rather than *dom.KeyboardEvent. Ignore such events.
+			return
+		}
+		switch {
 		// Escape.
 		case ke.KeyCode() == 27 && !ke.Repeat() && !ke.CtrlKey() && !ke.AltKey() && !ke.MetaKey() && !ke.ShiftKey():
 			if rm.isHidden() {
