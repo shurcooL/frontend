@@ -154,7 +154,7 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 		}
 	})
 
-	bodyClick := func(event dom.Event) {
+	backgroundClick := func(event dom.Event) {
 		if event.DefaultPrevented() {
 			return
 		}
@@ -168,8 +168,8 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 		event.PreventDefault()
 	}
 	// Use capture because we want click-outside-to-close to get handled before others.
-	document.Body().AddEventListener("click", true, bodyClick)
-	addTapEventListener(document.Body(), true, bodyClick)
+	document.AddEventListener("click", true, backgroundClick)
+	addTapEventListener(document, true, backgroundClick)
 
 	document.Body().AppendChild(rm.menu)
 }
