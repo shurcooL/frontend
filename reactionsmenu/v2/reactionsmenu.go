@@ -1,3 +1,4 @@
+//go:build js
 // +build js
 
 // Package reactionsmenu provides a reactions menu component.
@@ -85,12 +86,15 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 	rm.results = document.CreateElement("div").(*dom.HTMLDivElement)
 	rm.results.SetClass("rm-reactions-results")
 	rm.results.AddEventListener("click", false, func(event dom.Event) {
-		me := event.(*dom.MouseEvent)
-		x := (me.ClientX() - int(rm.results.GetBoundingClientRect().Left()) + rm.results.Underlying().Get("scrollLeft").Int()) / 30
+		pe := event.(interface {
+			ClientX() int
+			ClientY() int
+		})
+		x := (pe.ClientX() - int(rm.results.GetBoundingClientRect().Left()) + rm.results.Underlying().Get("scrollLeft").Int()) / 30
 		if x >= 9 {
 			return // Out of bounds to the right, likely because of scrollbar.
 		}
-		y := (me.ClientY() - int(rm.results.GetBoundingClientRect().Top()) + rm.results.Underlying().Get("scrollTop").Int()) / 30
+		y := (pe.ClientY() - int(rm.results.GetBoundingClientRect().Top()) + rm.results.Underlying().Get("scrollTop").Int()) / 30
 		i := y*9 + x
 		if i < 0 || i >= len(rm.filtered) {
 			return

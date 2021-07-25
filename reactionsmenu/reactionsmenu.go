@@ -83,7 +83,10 @@ func Setup(reactableURI string, reactionsService reactions.Service, authenticate
 	rm.results = document.CreateElement("div").(*dom.HTMLDivElement)
 	rm.results.SetClass("rm-reactions-results")
 	rm.results.AddEventListener("click", false, func(event dom.Event) {
-		me := event.(*dom.MouseEvent)
+		me, ok := event.(*dom.MouseEvent)
+		if !ok {
+			me = event.(*dom.PointerEvent).MouseEvent
+		}
 		x := (me.ClientX - int(rm.results.GetBoundingClientRect().Left) + rm.results.Underlying().Get("scrollLeft").Int()) / 30
 		if x >= 9 {
 			return // Out of bounds to the right, likely because of scrollbar.
