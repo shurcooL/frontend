@@ -1,4 +1,4 @@
-// +build browsertest
+//go:build browsertest
 
 package checkbox_test
 

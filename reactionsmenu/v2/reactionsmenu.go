@@ -1,5 +1,4 @@
 //go:build js
-// +build js
 
 // Package reactionsmenu provides a reactions menu component.
 package reactionsmenu

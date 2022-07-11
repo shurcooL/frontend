@@ -1,4 +1,4 @@
-// +build js
+//go:build js
 
 // Package tabsupport offers functionality to add tab support to a textarea element.
 package tabsupport

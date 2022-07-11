@@ -1,4 +1,4 @@
-// +build !js
+//go:build !js
 
 package select_menu
 

@@ -1,4 +1,4 @@
-// +build browsertest
+//go:build browsertest
 
 package select_menu_test
 
