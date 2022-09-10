@@ -1,3 +1,4 @@
+//go:build js
 // +build js
 
 package main
@@ -81,7 +82,10 @@ func setup() {
 	results.AddEventListener("click", false, func(event dom.Event) {
 		command.Focus()
 
-		me := event.(*dom.MouseEvent)
+		me, ok := event.(*dom.MouseEvent)
+		if !ok {
+			me = event.(*dom.PointerEvent).MouseEvent
+		}
 		y := (me.ClientY - int(results.GetBoundingClientRect().Top)) + results.Underlying().Get("scrollTop").Int()
 		selected = int(float64(y) / entryHeight)
 		updateResultSelection()
